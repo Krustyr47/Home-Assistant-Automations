@@ -1,0 +1,155 @@
+alias: Washing Machine Cycles
+description: ''
+trigger:
+  - type: power
+    platform: device
+    device_id: afdd1f975a180d5482ee2a40312a8aaa
+    entity_id: sensor.washing_machine_power
+    domain: sensor
+    id: Start of Cycle
+    above: 0.75
+  - type: power
+    platform: device
+    device_id: afdd1f975a180d5482ee2a40312a8aaa
+    entity_id: sensor.washing_machine_power
+    domain: sensor
+    id: End Of Cycle
+    below: 0.75
+  - platform: state
+    entity_id: input_select.washing_machine
+    id: 10 Min Cycle complete
+    from: Running
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    to: Cycle Complete
+  - platform: state
+    entity_id: input_select.washing_machine
+    id: 30 Min Cycle complete
+    from: Running
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    to: Cycle Complete
+  - platform: state
+    entity_id: input_select.washing_machine
+    id: 60 Min Cycle complete
+    from: Running
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+    to: Cycle Complete
+  - platform: state
+    entity_id: input_select.washing_machine
+    id: Cycle changed to Complete
+    from: Running
+    to: Cycle Complete
+  - platform: state
+    entity_id: binary_sensor.washing_machine_door_contact
+    id: Turn off Cycle
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.washing_machine_door_contact
+    from: Open
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+    to: Closed
+    id: Door Closed
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: Start of Cycle
+        sequence:
+          - service: input_select.select_option
+            data:
+              option: Running
+            target:
+              entity_id: input_select.washing_machine
+      - conditions:
+          - condition: trigger
+            id: End Of Cycle
+        sequence:
+          - service: input_select.select_option
+            target:
+              entity_id: input_select.washing_machine
+            data:
+              option: Cycle Complete
+          - service: notify.alexa_media_everywhere
+            data:
+              message: >-
+                "<voice name='Brian'>The washing machine is done.  Please change
+                out the laundry.</voice>
+              data:
+                type: announce
+                method: speak
+      - conditions:
+          - condition: trigger
+            id: 10 Min Cycle complete
+        sequence:
+          - service: notify.alexa_media_everywhere
+            data:
+              message: '"<voice name=''Brian''>OY! Go Change out the Laundry!</voice>'
+              data:
+                type: announce
+                method: speak
+      - conditions:
+          - condition: trigger
+            id: 30 Min Cycle complete
+        sequence:
+          - service: notify.alexa_media_everywhere
+            data:
+              message: >-
+                "<voice name='Brian'>Hey its been 30 minutes go change out the
+                laundry bruh!</voice>
+              data:
+                type: announce
+                mehtod: speak
+      - conditions:
+          - condition: trigger
+            id: 60 Min Cycle complete
+        sequence:
+          - service: notify.alexa_media_everywhere
+            data:
+              message: >-
+                "<voice name='Brian'>What the fuck!  Its been a god damned
+                hour!  Why hasn't the laundry been changed?</voice>
+              data:
+                type: announce
+                method: speak
+      - conditions:
+          - condition: trigger
+            id: Turn off Cycle
+          - condition: state
+            entity_id: input_select.washing_machine
+            state: Cycle Complete
+        sequence:
+          - service: input_select.select_option
+            data:
+              option: 'Off'
+            target:
+              entity_id: input_select.washing_machine
+      - conditions:
+          - condition: trigger
+            id: Door Closed
+          - condition: state
+            entity_id: input_select.washing_machine
+            state: 'Off'
+        sequence:
+          - service: notify.alexa_media_everywhere
+            data:
+              message: >-
+                "<voice name='Brian'>The washing machine door was left closed.  Please go open it and
+                leave it open.</voice>"
+              data:
+                type: announce
+                method: speak
+    default: []
+mode: single
