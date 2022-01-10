@@ -3,14 +3,14 @@ description: ''
 trigger:
   - type: power
     platform: device
-    device_id: afdd1f975a180d5482ee2a40312a8aaa
+    device_id: 
     entity_id: sensor.washing_machine_power
     domain: sensor
     id: Start of Cycle
     above: 0.75
   - type: power
     platform: device
-    device_id: afdd1f975a180d5482ee2a40312a8aaa
+    device_id: 
     entity_id: sensor.washing_machine_power
     domain: sensor
     id: End Of Cycle
