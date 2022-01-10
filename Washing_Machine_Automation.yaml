@@ -3,14 +3,14 @@ description: ''
 trigger:
   - type: power
     platform: device
-    device_id: 
+    device_id: afdd1f975a180d5482ee2a40312a8aaa
     entity_id: sensor.washing_machine_power
     domain: sensor
     id: Start of Cycle
     above: 0.75
   - type: power
     platform: device
-    device_id: 
+    device_id: afdd1f975a180d5482ee2a40312a8aaa
     entity_id: sensor.washing_machine_power
     domain: sensor
     id: End Of Cycle
@@ -54,13 +54,13 @@ trigger:
     to: 'on'
   - platform: state
     entity_id: binary_sensor.washing_machine_door_contact
-    from: Open
     for:
       hours: 0
       minutes: 20
       seconds: 0
-    to: 'on'
-    id: 'off'
+    to: 'off'
+    id: Door Closed
+    from: 'on'
 condition: []
 action:
   - choose:
@@ -146,8 +146,8 @@ action:
           - service: notify.alexa_media_everywhere
             data:
               message: >-
-                "<voice name='Brian'>The washing machine door was left closed.  Please go open it and
-                leave it open.</voice>"
+                "<voice name='Brian'>The washing machine door was left closed. 
+                Please go open it and leave it open.</voice>"
               data:
                 type: announce
                 method: speak
